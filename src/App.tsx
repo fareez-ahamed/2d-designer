@@ -22,11 +22,12 @@ export function App() {
     viewRef.current = view
 
     const onCanvasClick = (e: MouseEvent) => {
-      const { canvas } = view
+      const { canvas, screenToWorld } = view
       const rect = canvas.getBoundingClientRect()
       const x = e.clientX - rect.left
       const y = e.clientY - rect.top
-      const hit = hitTest(sceneRef.current, x, y)
+      const { x: wx, y: wy } = screenToWorld(x, y)
+      const hit = hitTest(sceneRef.current, wx, wy)
       sceneRef.current.selectedId = hit?.id ?? null
       view.redraw()
     }
