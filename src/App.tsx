@@ -1,20 +1,16 @@
-import { useRef } from 'react'
 import './style.css'
-import { Canvas, type CanvasHandle } from './Canvas'
-import { addRectangle, clearScene, createScene, type Scene } from './scene'
+import { Canvas } from './Canvas'
+import { useScene } from './SceneContext'
 
 export function App() {
-  const sceneRef = useRef<Scene>(createScene())
-  const canvasRef = useRef<CanvasHandle>(null)
+  const scene = useScene()
 
   const onAdd = () => {
-    addRectangle(sceneRef.current)
-    canvasRef.current?.redraw()
+    scene.addRectangle()
   }
 
   const onClear = () => {
-    clearScene(sceneRef.current)
-    canvasRef.current?.redraw()
+    scene.clear()
   }
 
   return (
@@ -40,7 +36,7 @@ export function App() {
           Add rectangle
         </button>
       </aside>
-      <Canvas ref={canvasRef} sceneRef={sceneRef} />
+      <Canvas />
     </>
   )
 }

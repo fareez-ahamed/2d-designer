@@ -314,10 +314,20 @@ export function mountCanvasView(
     layout()
   })
   ro.observe(container)
+
+  const onScreenResize = () => {
+    layout()
+  }
+  window.addEventListener('resize', onScreenResize)
+  const vv = window.visualViewport
+  vv?.addEventListener('resize', onScreenResize)
+
   layout()
 
   function unmount(): void {
     ro.disconnect()
+    window.removeEventListener('resize', onScreenResize)
+    vv?.removeEventListener('resize', onScreenResize)
     canvas.removeEventListener('wheel', onWheel)
     canvas.removeEventListener('pointerdown', onPointerDown)
     canvas.removeEventListener('pointermove', onPointerMove)
