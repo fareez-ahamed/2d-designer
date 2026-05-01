@@ -3,6 +3,7 @@ import type { Scene } from './scene'
 export type CanvasViewApi = {
   redraw: () => void
   readonly canvas: HTMLCanvasElement
+  unmount: () => void
 }
 
 export function mountCanvasView(
@@ -85,8 +86,14 @@ export function mountCanvasView(
   ro.observe(container)
   layout()
 
+  function unmount(): void {
+    ro.disconnect()
+    canvas.remove()
+  }
+
   return {
     redraw: draw,
     canvas,
+    unmount,
   }
 }
