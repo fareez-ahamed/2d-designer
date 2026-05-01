@@ -1,54 +1,20 @@
-import { type ElementRef, useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import './style.css'
-import { mountCanvasView } from './canvasView'
-import {
-  addRectangle,
-  clearScene,
-  createScene,
-  hitTest,
-  type Scene,
-} from './scene'
+import { Canvas, type CanvasHandle } from './Canvas'
+import { addRectangle, clearScene, createScene, type Scene } from './scene'
 
 export function App() {
   const sceneRef = useRef<Scene>(createScene())
-  const workspaceRef = useRef<ElementRef<'main'>>(null)
-  const viewRef = useRef<ReturnType<typeof mountCanvasView> | null>(null)
-
-  useEffect(() => {
-    const workspace = workspaceRef.current
-    if (workspace == null) return
-
-    const view = mountCanvasView(workspace, () => sceneRef.current)
-    viewRef.current = view
-
-    const onCanvasClick = (e: MouseEvent) => {
-      const { canvas, screenToWorld } = view
-      const rect = canvas.getBoundingClientRect()
-      const x = e.clientX - rect.left
-      const y = e.clientY - rect.top
-      const { x: wx, y: wy } = screenToWorld(x, y)
-      const hit = hitTest(sceneRef.current, wx, wy)
-      sceneRef.current.selectedId = hit?.id ?? null
-      view.redraw()
-    }
-
-    view.canvas.addEventListener('click', onCanvasClick)
-
-    return () => {
-      view.canvas.removeEventListener('click', onCanvasClick)
-      view.unmount()
-      viewRef.current = null
-    }
-  }, [])
+  const canvasRef = useRef<CanvasHandle>(null)
 
   const onAdd = () => {
     addRectangle(sceneRef.current)
-    viewRef.current?.redraw()
+    canvasRef.current?.redraw()
   }
 
   const onClear = () => {
     clearScene(sceneRef.current)
-    viewRef.current?.redraw()
+    canvasRef.current?.redraw()
   }
 
   return (
@@ -74,7 +40,7 @@ export function App() {
           Add rectangle
         </button>
       </aside>
-      <main ref={workspaceRef} className="app-main" id="workspace" />
+      <Canvas ref={canvasRef} sceneRef={sceneRef} />
     </>
   )
 }
